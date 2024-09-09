@@ -29,10 +29,10 @@ To run the program, follow these steps:
 
 ### Follow the prompts:
 
-1. Enter the path to the FOON file - i.e, FOON.txt
-2. Enter the goal object’s name - i.e, greek salad
-3. Enter the goal object’s state(s) (comma-separated if multiple) - i.e, mixed
+1. Enter the path to the FOON file - i.e, `FOON.txt`
+2. Enter the goal object’s name - i.e, `greek salad`
+3. Enter the goal object’s state(s) (comma-separated if multiple) - i.e, `mixed`
 4. Enter the path to the ingredients file - i.e, `ingredients.txt`
-5. Enter the name of the container required for the goal object - i.e, mixing bowl
+5. Enter the name of the container required for the goal object - i.e, `mixing bowl`
 
 Once the process is completed, the system will search for the goal object and its matching sequence in the FOON graph. It generates an output task tree saved in a `.txt` file containing the recipe steps.
