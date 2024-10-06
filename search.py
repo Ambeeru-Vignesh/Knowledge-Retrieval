@@ -6,7 +6,6 @@ from FOON_class import Object
 
 # Checks an ingredient exists in kitchen
 
-
 def check_if_exist_in_kitchen(kitchen_items, ingredient):
     """
         parameters: a list of all kitchen items,
@@ -97,7 +96,7 @@ def save_paths_to_file(task_tree, path):
 
 
 # -----------------------------------------------------------------------------------------------------------------------------#
-def search_IDS(kitchen_items=[], goal_node=None, max_depth=1):
+def search_IDS(kitchen_items=[], goal_node=None, max_depth=1, foon_object_nodes=None, foon_functional_units=None, foon_object_to_FU_map=None, utensils=[]):
     reference_task_tree = []
     items_to_search = [goal_node.id]
     items_already_searched = []
@@ -169,7 +168,7 @@ def calculate_a_star_score(success_rate, input_nodes_count):
     return cost + heuristic
 
 
-def search_a_star(kitchen_items=[], goal_node=None):
+def search_a_star(kitchen_items=[], goal_node=None, foon_object_nodes=None, foon_functional_units=None, foon_object_to_FU_map=None, utensils=[]):
     """
     A* search algorithm to find the optimal task tree for a given goal node,
     using both the cost function (inverse success rate) and heuristic function 
