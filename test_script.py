@@ -11,7 +11,7 @@ if __name__ == '__main__':
     create_graph(foon_file=foon_file)
     goal_name = input("Enter the goal object name: ")
     goal_state = input("Enter the goal object state (comma-separated if multiple): ").split(',')
-    ingredients_file = input("Enter the path to the ingredients items file ")
+    ingredients_file = input("Enter the path to the ingredients items file: ")
 
     # Read the universal FOON data
     foon_functional_units, foon_object_nodes, foon_object_to_FU_map = read_universal_foon()
@@ -28,11 +28,15 @@ if __name__ == '__main__':
     # Load ingredients
     ingredients = list();
     with open(ingredients_file, 'r') as f:
+
         for line in f:
             ingredients.append(line.rstrip())
 
-
+    
     container = input("Enter the container: ")
+    if container == '':
+        container = None
+    
     # Create the goal object
     goal_object = Object(goal_name)
     goal_object.states = goal_state
