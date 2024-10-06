@@ -1,4 +1,4 @@
-# Project 1: Knowledge Retrieval (part - 1)
+# Project 1: Knowledge Retrieval (part - 2)
 
 ## Introduction
 
@@ -8,8 +8,8 @@ This project is a **Functional Object-Oriented Network (FOON)** based recipe pla
 
 - Load and process a FOON graph from a text file.
 - Specify goal objects (e.g., dishes or foods), their states, ingredients, and containers.
-- Perform a breadth-first search (BFS) through FOON nodes to find a sequence of steps required to achieve the goal.
-- Save the generated task tree to an output file.
+- Performs both Iterative Deepening Search and A\* Search through FOON nodes to find a sequence of steps required to achieve the goal.
+- Saves the generated task tree to an output file.
 
 ## Ensure the following files are present in the working directory:
 
@@ -30,9 +30,9 @@ To run the program, follow these steps:
 ### Follow the prompts:
 
 1. Enter the path to the FOON file - i.e, `FOON.txt`
-2. Enter the goal object’s name - i.e, `greek salad`
+2. Enter the goal object’s name - for example: `greek salad`
 3. Enter the goal object’s state(s) (comma-separated if multiple) - i.e, `mixed`
-4. Enter the path to the ingredients file - i.e, `ingredients.txt`
+4. Enter the ingredients (comma-separated if multiple) - i.e, `ingredients.txt`
 5. Enter the name of the container required for the goal object - i.e, `mixing bowl`
 
 Once the process is completed, the system will search for the goal object and its matching sequence in the FOON graph. It generates an output task tree saved in a `.txt` file containing the recipe steps.
