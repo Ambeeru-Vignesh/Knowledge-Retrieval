@@ -1,8 +1,8 @@
-# Project 1: Knowledge Retrieval (part - 2)
+# Project 1: Knowledge Retrieval (part - 2 Implement search algorithm)
 
 ## Introduction
 
-This project is a **Functional Object-Oriented Network (FOON)** based recipe planner. It allows users to input goal objects, such as dishes they want to create, and searches for a sequence of actions to achieve that goal using predefined kitchen items, utensils, and a list of ingredients. The program generates an output that outlines the task sequence required to reach the desired goal, saved in a `.txt` file.
+This part of project includes implementing Iterative Deepening Search (IDS) and A Search algorithms to retrieve a task tree based on the user's goal, and the ability to handle multiple ways to prepare an object efficiently using heuristics and cost functions.
 
 ## Features
 
@@ -10,13 +10,6 @@ This project is a **Functional Object-Oriented Network (FOON)** based recipe pla
 - Specify goal objects (e.g., dishes or foods), their states, ingredients, and containers.
 - Performs both Iterative Deepening Search and A\* Search through FOON nodes to find a sequence of steps required to achieve the goal.
 - Saves the generated task tree to an output file.
-
-## Ensure the following files are present in the working directory:
-
-- **FOON.txt**: A file that contains the FOON graph.
-- **ingredients.txt**: A file containing the list of ingredients for the goal object.
-- **utensils.txt**: A file listing the available kitchen utensils.
-- **kitchen.json**: A JSON file containing the kitchen items.
 
 ## Usage
 
@@ -30,9 +23,13 @@ To run the program, follow these steps:
 ### Follow the prompts:
 
 1. Enter the path to the FOON file - i.e, `FOON.txt`
-2. Enter the goal object’s name - for example: `greek salad`
-3. Enter the goal object’s state(s) (comma-separated if multiple) - i.e, `mixed`
-4. Enter the ingredients (comma-separated if multiple) - i.e, `ingredients.txt`
-5. Enter the name of the container required for the goal object - i.e, `mixing bowl`
+2. Enter the goal object’s name - for example: `ice`
+3. Enter the goal object’s state(s) (comma-separated if multiple).
+4. Enter the ingredients (comma-separated if multiple).
+5. Enter the name of the container required for the goal object.
 
 Once the process is completed, the system will search for the goal object and its matching sequence in the FOON graph. It generates an output task tree saved in a `.txt` file containing the recipe steps.
+
+### Output Screenshot:
+
+![For goal node i.e, ice](output_screenshot.png)
