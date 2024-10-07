@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This part of project includes implementing Iterative Deepening Search (IDS) and A Search algorithms to retrieve a task tree based on the user's goal, and the ability to handle multiple ways to prepare an object efficiently using heuristics and cost functions.
+This part of project includes implementing Iterative Deepening Search (IDS) and A\* Search algorithms to retrieve a task tree based on the user's goal, and the ability to handle multiple ways to prepare an object efficiently using heuristics and cost functions.
 
 ## Features
 
