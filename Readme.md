@@ -1,4 +1,4 @@
-# Project 1: Knowledge Retrieval (part - 2 Implement Monte Carlo Tree Search (MCTS) Algorithm)
+# Project 1: Knowledge Retrieval (part - 3 Implement Monte Carlo Tree Search (MCTS) Algorithm)
 
 ## Introduction
 
