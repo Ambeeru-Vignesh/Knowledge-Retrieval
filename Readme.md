@@ -1,14 +1,14 @@
-# Project 1: Knowledge Retrieval (part - 2 Implement search algorithm)
+# Project 1: Knowledge Retrieval (part - 2 Implement Monte Carlo Tree Search (MCTS) Algorithm)
 
 ## Introduction
 
-This part of project includes implementing Iterative Deepening Search (IDS) and A\* Search algorithms to retrieve a task tree based on the user's goal, and the ability to handle multiple ways to prepare an object efficiently using heuristics and cost functions.
+This part of project includes Monte Carlo Tree Search algorithm(MCTS) to retrieve a task tree based on the user's goal, optimized through simulations to determine the best steps based on success rates.
 
 ## Features
 
 - Load and process a FOON graph from a text file.
 - Specify goal objects (e.g., dishes or foods), their states, ingredients, and containers.
-- Performs both Iterative Deepening Search and A\* Search through FOON nodes to find a sequence of steps required to achieve the goal.
+- Performs Monte Carlo Tree Search algorithm(MCTS) through FOON nodes to find the best sequence of steps required to achieve the goal.
 - Saves the generated task tree to an output file.
 
 ## Usage
@@ -32,4 +32,4 @@ Once the process is completed, the system will search for the goal object and it
 
 ### Output Screenshot:
 
-![For goal node i.e, ice](output_screenshot.png)
+![For goal node i.e, ice](Output_Screenshot.png)

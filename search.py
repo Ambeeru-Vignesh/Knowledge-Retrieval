@@ -1,8 +1,166 @@
+import math
 import pickle
 import json
+import random
 from FOON_class import Object
+from math import sqrt, log
 
 # -----------------------------------------------------------------------------------------------------------------------------#
+
+class MCTSNode:
+    def __init__(self, state, parent=None):
+        self.state = state  # Object ID in FOON
+        self.parent = parent
+        self.children = []  # List of (FU_index, MCTSNode) tuples
+        self.visits = 0
+        self.wins = 0
+        self.untried_FUs = []  # List of untried functional units
+
+def search_MCTS(kitchen_items=[], goal_node=None, foon_object_nodes=None, foon_functional_units=None, 
+                foon_object_to_FU_map=None, utensils=[], k=1000):
+    """
+    Monte Carlo Tree Search implementation for FOON
+    k: number of simulations to run (default 1000)
+    """
+    
+    # Initialize root node with goal object
+    root = MCTSNode(goal_node.id)
+    root.untried_FUs = list(foon_object_to_FU_map[goal_node.id])
+    
+    # Run k simulations
+    for _ in range(k):
+        node = root
+        
+        # Selection: Select best child until we reach a node with untried moves
+        while node.untried_FUs == [] and node.children != []:
+            node = select_child(node)
+            
+        # Expansion: Add a new child node if there are untried moves
+        if node.untried_FUs != []:
+            fu_index = random.choice(node.untried_FUs)
+            node.untried_FUs.remove(fu_index)
+            
+            # Create new node for each input object of the selected functional unit
+            for input_node in foon_functional_units[fu_index].input_nodes:
+                child_state = input_node.id
+                child = MCTSNode(child_state, parent=node)
+                
+                # Add untried FUs for the child node
+                if child_state in foon_object_to_FU_map:
+                    child.untried_FUs = list(foon_object_to_FU_map[child_state])
+                
+                node.children.append((fu_index, child))
+        
+        # Simulation: Perform random moves until we reach a terminal state
+        success = simulate_execution(node, foon_object_nodes, foon_functional_units, 
+                                  foon_object_to_FU_map, kitchen_items)
+        
+        # Backpropagation: Update statistics for all nodes in the path
+        while node is not None:
+            node.visits += 1
+            if success:
+                node.wins += 1
+            node = node.parent
+    
+    # Build the final task tree using the most visited path
+    return build_task_tree(root, foon_functional_units)
+
+def select_child(node):
+    """
+    Select the best child node using UCT formula
+    UCT = wins/visits + C * sqrt(ln(parent_visits)/visits)
+    """
+    C = sqrt(2)  # Exploration parameter
+    
+    best_score = float('-inf')
+    best_child = None
+    
+    for _, child in node.children:
+        if child.visits == 0:
+            return child
+        
+        # Calculate UCT score
+        exploitation = child.wins / child.visits
+        exploration = C * sqrt(log(node.visits) / child.visits)
+        uct_score = exploitation + exploration
+        
+        if uct_score > best_score:
+            best_score = uct_score
+            best_child = child
+    
+    return best_child
+
+def simulate_execution(node, foon_object_nodes, foon_functional_units, foon_object_to_FU_map, kitchen_items):
+    """
+    Simulate random execution from current node state
+    Returns True if simulation successful, False otherwise
+    """
+    current_state = node.state
+    visited_states = set()
+    
+    while True:
+        # Check if current object exists in kitchen
+        current_object = foon_object_nodes[current_state]
+        if check_if_exist_in_kitchen(kitchen_items, current_object):
+            return True
+            
+        # Get available functional units for current state
+        if current_state not in foon_object_to_FU_map:
+            return False
+            
+        available_FUs = foon_object_to_FU_map[current_state]
+        if not available_FUs:
+            return False
+            
+        # Select random FU
+        selected_FU = random.choice(available_FUs)
+        
+        # Get motion success rate and simulate success/failure
+        motion_success_rate = get_motion_rate(foon_functional_units[selected_FU].motion_node)
+        if motion_success_rate is None or random.random() > motion_success_rate:
+            return False
+            
+        # Select random input object as next state
+        input_nodes = foon_functional_units[selected_FU].input_nodes
+        if not input_nodes:
+            return False
+            
+        current_state = random.choice(input_nodes).id
+        
+        # Check for cycles
+        if current_state in visited_states:
+            return False
+        visited_states.add(current_state)
+
+def build_task_tree(root, foon_functional_units):
+    """
+    Build the final task tree by selecting the most visited paths
+    """
+    task_tree = []
+    current = root
+    
+    while current.children:
+        # Find child with most visits
+        best_visits = -1
+        best_fu_index = None
+        best_child = None
+        
+        for fu_index, child in current.children:
+            if child.visits > best_visits:
+                best_visits = child.visits
+                best_fu_index = fu_index
+                best_child = child
+        
+        if best_fu_index is None:
+            break
+            
+        task_tree.append(foon_functional_units[best_fu_index])
+        current = best_child
+    
+    return task_tree
+
+# Other search algorithms and functions below...
+
 
 # Checks an ingredient exists in kitchen
 
@@ -161,6 +319,19 @@ def get_motion_rate(node):
     return motion_rate
 
 
+def get_motion_successrate(candidate_units, foon_functional_units):
+    success_rates = []
+    for candidate in candidate_units:
+        result_node = foon_functional_units[candidate]
+        motion_node = result_node.motion_node
+        success_rate = get_motion_rate(motion_node)
+        if success_rate is not None:
+            success_rates.append(success_rate)
+        else:
+            success_rates.append(0)  # Assign a default low rate if no success rate is found
+    return success_rates
+
+
 def calculate_a_star_score(success_rate, input_nodes_count):
     # A* combines cost (inverse success rate) and heuristic (number of input nodes)
     cost = 1 / success_rate  # Cost is the inverse of the success rate
@@ -251,7 +422,6 @@ def search_a_star(kitchen_items=[], goal_node=None, foon_object_nodes=None, foon
 # creates the graph using adjacency list
 # each object has a list of functional list where it is an output
 
-
 def read_universal_foon(filepath='FOON.pkl'):
     """
         parameters: path of universal foon (pickle file)
@@ -291,11 +461,13 @@ if __name__ == '__main__':
                 # output_task_tree = search_BFS(kitchen_items, object)
                 # save_paths_to_file(output_task_tree,
                 #                    'output_BFS_{}.txt'.format(node["label"]))
-                output_task_tree = search_IDS(kitchen_items, object, 1)
-                #print("Output Task Tree:", output_task_tree)
-                save_paths_to_file(output_task_tree,
-                                   'output_IDS_{}.txt'.format(node["label"]))
-                output_task_tree1 = search_a_star(kitchen_items, object)
-                save_paths_to_file(output_task_tree1,
-                                   'output_AStar_{}.txt'.format(node["label"]))
+                # output_task_tree = search_IDS(kitchen_items, object, 1)
+                # #print("Output Task Tree:", output_task_tree)
+                # save_paths_to_file(output_task_tree,
+                #                    'output_IDS_{}.txt'.format(node["label"]))
+                # output_task_tree1 = search_a_star(kitchen_items, object)
+                # save_paths_to_file(output_task_tree1,
+                #                    'output_AStar_{}.txt'.format(node["label"]))
+                output_task_tree = search_mcts(kitchen_items, object, foon_object_nodes, foon_functional_units, foon_object_to_FU_map, utensils, k=1000)
+                save_paths_to_file(output_task_tree, 'output_MCTS_{}.txt'.format(node["label"]))
                 break

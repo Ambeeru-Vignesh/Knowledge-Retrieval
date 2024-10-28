@@ -1,7 +1,7 @@
 import json
 from FOON_class import Object
 from preprocess import create_graph
-from search import read_universal_foon, save_paths_to_file, search_BFS, search_IDS, search_a_star
+from search import read_universal_foon, save_paths_to_file, search_BFS, search_IDS, search_MCTS, search_a_star
 
 if __name__ == '__main__':
   
@@ -16,6 +16,8 @@ if __name__ == '__main__':
     # Read the universal FOON data
     foon_functional_units, foon_object_nodes, foon_object_to_FU_map = read_universal_foon()
     print(f"FOON data loaded. Functional units: {len(foon_functional_units)}, Object nodes: {len(foon_object_nodes)}")
+
+    flag = False
 
     # Load utensils
     utensils = []
@@ -42,6 +44,7 @@ if __name__ == '__main__':
     container = input("Enter the container: ")
     if container == '':
         container = None
+
     
     # Create the goal object
     goal_object = Object(goal_name)
@@ -49,9 +52,23 @@ if __name__ == '__main__':
     goal_object.ingredients = ingredients
     goal_object.container = container
 
+
+        # Function to load motion success rates from a file
+    def load_motion_success_rates(filename):
+        motion_success_rates = {}
+        with open(filename, 'r') as file:
+            for line in file:
+                motion, success_rate = line.strip().split('\t')
+                motion_success_rates[motion] = float(success_rate)
+        return motion_success_rates
+
+# Load the motion success rates
+    motion_success_rates = load_motion_success_rates('motion.txt')
+
     # Search for the goal object in the FOON nodes
     for object in foon_object_nodes:
         if object.check_object_equal(goal_object):
+            flag = True
             # output_task_tree = search_BFS(
             #     kitchen_items,
             #     object,
@@ -61,23 +78,35 @@ if __name__ == '__main__':
             #     utensils
             # )
             # save_paths_to_file(output_task_tree, 'output_BFS_{}.txt'.format(goal_name))
-            output_task_tree = search_IDS(
+            # output_task_tree = search_IDS(
+            #         kitchen_items,
+            #         object,
+            #         1,
+            #         foon_object_nodes,
+            #         foon_functional_units,
+            #         foon_object_to_FU_map,
+            #         utensils)
+            # save_paths_to_file(output_task_tree,
+            #                        'output_IDS_{}.txt'.format(goal_name))
+            # output_task_tree1 = search_a_star(
+            #         kitchen_items,                              
+            #         object, 
+            #         foon_object_nodes, 
+            #         foon_functional_units, 
+            #         foon_object_to_FU_map, 
+            #         utensils)
+            # save_paths_to_file(output_task_tree1,
+            #                        'output_AStar_{}.txt'.format(goal_name))
+            output_task_tree = search_MCTS(
                     kitchen_items,
                     object,
-                    1,
                     foon_object_nodes,
                     foon_functional_units,
                     foon_object_to_FU_map,
                     utensils)
             save_paths_to_file(output_task_tree,
-                                   'output_IDS_{}.txt'.format(goal_name))
-            output_task_tree1 = search_a_star(
-                    kitchen_items,                              
-                    object, 
-                    foon_object_nodes, 
-                    foon_functional_units, 
-                    foon_object_to_FU_map, 
-                    utensils)
-            save_paths_to_file(output_task_tree1,
-                                   'output_AStar_{}.txt'.format(goal_name))
+                                   'output_mcts_{}.txt'.format(goal_name))
             break
+
+    if not flag:
+        print("Goal object not found in the FOON nodes.")
